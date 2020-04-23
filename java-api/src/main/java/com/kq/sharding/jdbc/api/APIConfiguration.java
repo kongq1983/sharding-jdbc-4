@@ -35,6 +35,7 @@ public class APIConfiguration {
     TableRuleConfiguration getOrderTableRuleConfiguration() {
         TableRuleConfiguration result = new TableRuleConfiguration("account", "test$->{1..2}.account");
         result.setKeyGeneratorConfig(getKeyGeneratorConfiguration());
+        result.setDatabaseShardingStrategyConfig(new InlineShardingStrategyConfiguration("id", "test$->{(id % 2)+1}"));
         //固定account表
         result.setTableShardingStrategyConfig(new InlineShardingStrategyConfiguration("id", "account"));
         // 动态选择表
