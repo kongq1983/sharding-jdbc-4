@@ -16,7 +16,7 @@ insert into account(id,username,phone) values(3,'ccc','20511112223');
 
 
 CREATE TABLE `dict` (
-  `ID` varchar(32) NOT NULL,
+  `ID` bigint(20) NOT NULL,
   `type` varchar(32) DEFAULT NULL,
   `code` varchar(32) DEFAULT NULL,
   `name` varchar(64) DEFAULT NULL,
