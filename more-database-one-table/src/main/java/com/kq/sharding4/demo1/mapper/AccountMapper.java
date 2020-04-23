@@ -16,17 +16,17 @@ import java.util.List;
 @Mapper
 public interface AccountMapper {
 
-    @Select("select id,username,phone,province,createTime from t_account limit 20")
+    @Select("select id,username,phone,province,createTime from account limit 20")
     public List<Account> getAccountList();
 
 
-    @Insert("insert into t_account(id,username,phone,createTime) values(#{id},#{username},#{phone},#{createTime})")
+    @Insert("insert into account(id,username,phone,createTime) values(#{id},#{username},#{phone},#{createTime})")
     void addAccount(Account o);
 
-    @Insert("insert into t_account(username,phone,createTime) values(#{username},#{phone},#{createTime})")
+    @Insert("insert into account(username,phone,createTime) values(#{username},#{phone},#{createTime})")
     void addAccountNoId(Account o);
 
-    @Select("select id,username,phone,province,createTime from t_account where id=#{id}")
+    @Select("select id,username,phone,province,createTime from account where id=#{id}")
     public Account getAccount(Long id);
 
 }
