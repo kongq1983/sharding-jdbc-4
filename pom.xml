@@ -9,6 +9,7 @@
     <version>1.0-SNAPSHOT</version>
     <modules>
         <module>more-database-one-table</module>
+        <module>java-api</module>
     </modules>
     <packaging>pom</packaging>
 
