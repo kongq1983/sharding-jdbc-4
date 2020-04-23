@@ -6,7 +6,6 @@ import org.apache.shardingsphere.api.config.sharding.TableRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.strategy.InlineShardingStrategyConfiguration;
 import org.apache.shardingsphere.api.config.sharding.strategy.StandardShardingStrategyConfiguration;
 import org.apache.shardingsphere.shardingjdbc.api.ShardingDataSourceFactory;
-import org.apache.shardingsphere.spring.boot.util.DataSourceUtil;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -23,9 +22,8 @@ public class APIConfiguration {
 //        shardingRuleConfig.getBindingTableGroups().add("t_order, t_order_item");
         shardingRuleConfig.getBindingTableGroups().add("account");
         shardingRuleConfig.getBroadcastTables().add("dict");
-        shardingRuleConfig.setDefaultDatabaseShardingStrategyConfig(new InlineShardingStrategyConfiguration("id", "ds${id % 2}"));
-        shardingRuleConfig.setDefaultTableShardingStrategyConfig(new InlineShardingStrategyConfiguration("id", "ds${id % 2}"));
-//        shardingRuleConfig.setDefaultTableShardingStrategyConfig(new StandardShardingStrategyConfiguration("id", "ds${id % 2}"));
+//        shardingRuleConfig.setDefaultDatabaseShardingStrategyConfig(new InlineShardingStrategyConfiguration("id", "${id % 2}"));
+//        shardingRuleConfig.setDefaultTableShardingStrategyConfig(new InlineShardingStrategyConfiguration("id", "${id % 2}"));
         return ShardingDataSourceFactory.createDataSource(createDataSourceMap(), shardingRuleConfig, new Properties());
     }
 
@@ -35,8 +33,14 @@ public class APIConfiguration {
     }
 
     TableRuleConfiguration getOrderTableRuleConfiguration() {
-        TableRuleConfiguration result = new TableRuleConfiguration("account", "test{1..2}.account");
+        TableRuleConfiguration result = new TableRuleConfiguration("account", "test$->{1..2}.account");
         result.setKeyGeneratorConfig(getKeyGeneratorConfiguration());
+        //固定account表
+        result.setTableShardingStrategyConfig(new InlineShardingStrategyConfiguration("id", "account"));
+        // 动态选择表
+//        result.setTableShardingStrategyConfig(new InlineShardingStrategyConfiguration("id", "t_order${order_id % 2}"));
+
+//        result.setTableShardingStrategyConfig();
         return result;
     }
 
