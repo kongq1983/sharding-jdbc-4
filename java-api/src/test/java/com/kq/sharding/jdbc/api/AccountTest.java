@@ -1,5 +1,6 @@
 package com.kq.sharding.jdbc.api;
 
+import lombok.extern.slf4j.Slf4j;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -7,6 +8,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import java.util.List;
 import java.util.Map;
 
+@Slf4j
 public class AccountTest {
 
     APIConfiguration configuration = new APIConfiguration();
@@ -14,6 +16,7 @@ public class AccountTest {
 
     @Before
     public void before() throws Exception{
+        log.info("call before method ------------------");
         jdbcTemplate = new JdbcTemplate(configuration.getShardingDataSource());
     }
 
