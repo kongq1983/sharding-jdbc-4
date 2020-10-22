@@ -21,7 +21,7 @@ public class APIConfiguration {
 //        shardingRuleConfig.getTableRuleConfigs().add(getOrderItemTableRuleConfiguration());
 //        shardingRuleConfig.getBindingTableGroups().add("t_order, t_order_item");
         shardingRuleConfig.getBindingTableGroups().add("account");
-        shardingRuleConfig.getBroadcastTables().add("dict");
+        shardingRuleConfig.getBroadcastTables().add("dict"); // 广播 每个表都会插入
 //        shardingRuleConfig.setDefaultDatabaseShardingStrategyConfig(new InlineShardingStrategyConfiguration("id", "${id % 2}"));
 //        shardingRuleConfig.setDefaultTableShardingStrategyConfig(new InlineShardingStrategyConfiguration("id", "${id % 2}"));
         return ShardingDataSourceFactory.createDataSource(createDataSourceMap(), shardingRuleConfig, new Properties());
