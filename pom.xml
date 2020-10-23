@@ -41,7 +41,8 @@
         <mycommon.version>1.0-SNAPSHOT</mycommon.version>
         <lombok.version>1.18.8</lombok.version>
         <fastjson.version>1.2.29</fastjson.version>
-        <shardingsphere.version>4.0.1</shardingsphere.version>
+        <shardingsphere.version>4.1.1</shardingsphere.version>
+        <!--<shardingsphere.version>4.0.1</shardingsphere.version>-->
         <!-- <mysql.version>6.0.6</mysql.version>
          <mysql8.version>8.0.15</mysql8.version>-->
     </properties>
