@@ -33,7 +33,7 @@ public class AccountTest {
 
     @Test
     public void addAccount() throws Exception{
-        Long id = 6l;
+        Long id = 5l;
         String username = "k"+id;
         String phone = "13512341234";
         String sql = "insert into account(id,username,phone) values(?,?,?)";

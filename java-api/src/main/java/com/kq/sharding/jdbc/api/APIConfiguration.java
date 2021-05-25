@@ -13,6 +13,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
+/**
+ * 表达式: https://shardingsphere.apache.org/document/legacy/4.x/document/cn/features/sharding/other-features/inline-expression/
+ * 数据库有2个 test0(account_0、account_2) teset1(account_1、account_3)
+ *
+ */
 public class APIConfiguration {
 
     DataSource getShardingDataSource() throws SQLException {
@@ -33,11 +38,14 @@ public class APIConfiguration {
     }
 
     TableRuleConfiguration getOrderTableRuleConfiguration() {
-        TableRuleConfiguration result = new TableRuleConfiguration("account", "test$->{1..2}.account");
+//        TableRuleConfiguration result = new TableRuleConfiguration("account", "test$->{1..2}.account");
+        TableRuleConfiguration result = new TableRuleConfiguration("account", "test0.account_0,test0.account_2,test1.account_1,test1.account_3");
         result.setKeyGeneratorConfig(getKeyGeneratorConfiguration());
-        result.setDatabaseShardingStrategyConfig(new InlineShardingStrategyConfiguration("id", "test$->{(id % 2)+1}"));
-        //固定account表
-        result.setTableShardingStrategyConfig(new InlineShardingStrategyConfiguration("id", "account"));
+//        result.setDatabaseShardingStrategyConfig(new InlineShardingStrategyConfiguration("id", "test$->{(id % 2)+1}"));
+        // id=1:在ds1   id=2:在ds0  单数在1库，偶数在0库
+        result.setDatabaseShardingStrategyConfig(new InlineShardingStrategyConfiguration("id", "test$->{(id % 2)}"));
+        //固定account表 account_1、account_3在ds1   account_0、account_2在ds2
+        result.setTableShardingStrategyConfig(new InlineShardingStrategyConfiguration("id", "account_$->{(id % 4)}"));
         // 动态选择表
 //        result.setTableShardingStrategyConfig(new InlineShardingStrategyConfiguration("id", "t_order${order_id % 2}"));
 
@@ -52,8 +60,10 @@ public class APIConfiguration {
 
     Map<String, DataSource> createDataSourceMap() {
         Map<String, DataSource> result = new HashMap<>();
+//        result.put("test1", createDataSource("test1"));
+//        result.put("test2", createDataSource("test2"));
+        result.put("test0", createDataSource("test0"));
         result.put("test1", createDataSource("test1"));
-        result.put("test2", createDataSource("test2"));
         return result;
     }
 
