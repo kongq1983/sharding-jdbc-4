@@ -29,12 +29,19 @@ spring:
     sharding:
       tables:
         t_order:
-#          actual-data-nodes: ds->{1}.t_order
-          actual-data-nodes: ds1.t_order
+#          actual-data-nodes: ds->{1}.t_order  找不到规则的时候 ，会使用这个条件
+          actual-data-nodes: ds1.t_order_20210$->{5..9},ds1.t_order_20211$->{0}
           table-strategy:
             standard:
               sharding-column: sale_date
               precise-algorithm-class-name: com.kq.sharding.algorithm.OrderTimePreciseShardingAlgorithm
+              range-algorithm-class-name: com.kq.sharding.algorithm.OrderTimeRangeShardingAlgorithm
+        t_order_a:
+          actual-data-nodes: ds1.t_order
+          table-strategy:
+            standard:
+              sharding-column: id
+              precise-algorithm-class-name: com.kq.sharding.algorithm.OrderIdPreciseShardingAlgorithm
 
       default-data-source-name: ds1
 

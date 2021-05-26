@@ -2,6 +2,8 @@ package com.kq.sharding.controller;
 
 import com.kq.sharding.entity.Order;
 import com.kq.sharding.mapper.OrderMapper;
+import com.kq.sharding.util.ShardingDateUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,7 +21,7 @@ import java.util.concurrent.atomic.AtomicLong;
  * @date 2021-05-25 16:46
  * @since 2020-0630
  */
-
+@Slf4j
 @RestController
 @RequestMapping("/order")
 public class OrderController {
@@ -27,14 +29,51 @@ public class OrderController {
     @Autowired
     private OrderMapper orderMapper;
 
+    @RequestMapping("/delete")
+    public String deleteAll(){
+        orderMapper.deleteAll();
+        return "ok";
+    }
+
     @RequestMapping("/{id}")
     public Order list(@PathVariable("id") String id){
         return orderMapper.getOrder(id);
     }
 
+    @RequestMapping("/a/{id}")
+    public Order lista(@PathVariable("id") String id){
+        return orderMapper.getOrderById(id);
+    }
+
     @RequestMapping("/list")
     public List<Order> list(){
         return orderMapper.getOrderList();
+    }
+
+    @RequestMapping("/list1")
+    public List<Order> list1(){
+        return orderMapper.getOrderListBySaleDate();
+    }
+
+    @RequestMapping("/list2")
+    public List<Order> list2(){
+        Date startDate = ShardingDateUtil.stringToDate("2021-07-01 00:00:00");
+        Date endDate = ShardingDateUtil.stringToDate("2021-09-01 00:00:00");
+
+        log.info("list2 startDate={},endDate={}",startDate,endDate);
+
+        return orderMapper.getOrderListBySaleDate1(startDate,endDate);
+    }
+
+
+    @RequestMapping("/listb")
+    public List<Order> listBetween(){
+        Date startDate = ShardingDateUtil.stringToDate("2021-07-01 00:00:00");
+        Date endDate = ShardingDateUtil.stringToDate("2021-09-01 00:00:00");
+
+        log.info("listBetween startDate={},endDate={}",startDate,endDate);
+
+        return orderMapper.getOrderListBySaleDateBetween(startDate,endDate);
     }
 
     private AtomicLong atomicLong = new AtomicLong(0);
@@ -50,7 +89,7 @@ public class OrderController {
         for(int i=0;i<dates.length;i++) {
             long id = atomicLong.incrementAndGet();
             Order o = new Order();
-            o.setId(String.valueOf(id));
+            o.setId(dates[i].replaceAll("-","")+id);
             o.setCode(String.valueOf(id));
             o.setCreateTime(new Date());
             o.setSaleDate(stringToDate(dates[i]));
