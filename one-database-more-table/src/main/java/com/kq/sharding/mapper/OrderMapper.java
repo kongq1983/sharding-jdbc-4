@@ -18,12 +18,28 @@ public interface OrderMapper {
     @Select("select id,user_id userId,code,sale_date saleDate,create_time createTime from t_order limit 20")
     public List<Order> getOrderList();
 
+    /**
+     * STR_TO_DATE不会分片
+     * @return
+     */
     @Select("select id,user_id userId,code,sale_date saleDate,create_time createTime from t_order where sale_date> STR_TO_DATE('2021-07-01 10:20:30','%Y-%m-%d') and sale_date< STR_TO_DATE('2021-09-01 10:20:30','%Y-%m-%d')")
     public List<Order> getOrderListBySaleDate();
 
+    /**
+     * 会分片 - OrderTimeRangeShardingAlgorithm
+     * @param startDate
+     * @param endDate
+     * @return
+     */
     @Select("select id,user_id userId,code,sale_date saleDate,create_time createTime from t_order where sale_date> #{startDate} and sale_date< #{endDate}")
     public List<Order> getOrderListBySaleDate1(@Param("startDate") Date startDate, @Param("endDate")Date endDate);
 
+    /**
+     * 会分片 - OrderTimeRangeShardingAlgorithm
+     * @param startDate
+     * @param endDate
+     * @return
+     */
     @Select("select id,user_id userId,code,sale_date saleDate,create_time createTime from t_order where sale_date between #{startDate} and #{endDate}")
     public List<Order> getOrderListBySaleDateBetween(@Param("startDate") Date startDate, @Param("endDate")Date endDate);
 
