@@ -10,6 +10,7 @@
     <modules>
         <module>more-database-one-table</module>
         <module>java-api</module>
+        <module>one-database-more-table</module>
     </modules>
     <packaging>pom</packaging>
 
