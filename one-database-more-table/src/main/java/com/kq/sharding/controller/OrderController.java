@@ -1,7 +1,11 @@
 package com.kq.sharding.controller;
 
+import com.kq.sharding.entity.DtoPage;
 import com.kq.sharding.entity.Order;
+import com.kq.sharding.entity.OrderDetail;
+import com.kq.sharding.mapper.OrderDetailMapper;
 import com.kq.sharding.mapper.OrderMapper;
+import com.kq.sharding.service.OrderService;
 import com.kq.sharding.util.ShardingDateUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +17,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
 
 
@@ -29,9 +34,16 @@ public class OrderController {
     @Autowired
     private OrderMapper orderMapper;
 
+    @Autowired
+    private OrderService orderService;
+
+    @Autowired
+    private OrderDetailMapper orderDetailMapper;
+
     @RequestMapping("/delete")
     public String deleteAll(){
         orderMapper.deleteAll();
+        orderDetailMapper.deleteAll();
         return "ok";
     }
 
@@ -76,6 +88,80 @@ public class OrderController {
         return orderMapper.getOrderListBySaleDateBetween(startDate,endDate);
     }
 
+    @RequestMapping("/listd1")
+    public List<Map<String,Object>> getOrderAndDetailList(){
+//        Date startDate = ShardingDateUtil.stringToDate("2021-07-01 00:00:00");
+//        Date endDate = ShardingDateUtil.stringToDate("2021-09-01 00:00:00");
+//
+//        log.info("listBetween startDate={},endDate={}",startDate,endDate);
+
+        return orderMapper.getOrderAndDetailList1();
+    }
+
+    @RequestMapping("/listd2")
+    public List<Map<String,Object>> getOrderAndDetailList2(){
+//        Date startDate = ShardingDateUtil.stringToDate("2021-07-01 00:00:00");
+//        Date endDate = ShardingDateUtil.stringToDate("2021-09-01 00:00:00");
+//
+//        log.info("listBetween startDate={},endDate={}",startDate,endDate);
+
+        return orderMapper.getOrderAndDetailList2();
+    }
+
+    @RequestMapping("/listd3")
+    public List<Map<String,Object>> getOrderAndDetailList3(){
+        return orderMapper.getOrderAndDetailList3();
+    }
+
+    @RequestMapping("/listd4")
+    public List<Map<String,Object>> getOrderAndDetailList4() {
+        return orderMapper.getOrderAndDetailList4();
+    }
+
+    /**
+     * 根据id分片 查找
+     * @param curPage
+     * @return
+     */
+    @RequestMapping("/listpa/{curPage}")
+    public List<Map<String,Object>> getOrderAndDetailListPagea(@PathVariable("curPage") Integer curPage){
+        DtoPage dto = new DtoPage();
+        if(curPage==null){
+            curPage=1;
+        }
+        dto.setPageNow(curPage);
+
+        Date startDate = ShardingDateUtil.stringToDate("2021-07-01 00:00:00");
+        Date endDate = ShardingDateUtil.stringToDate("2021-09-01 00:00:00");
+
+        dto.setStartDate(startDate);
+        dto.setEndDate(endDate);
+
+        return orderService.getOrders1(dto);
+    }
+
+    /**
+     * 根据销售日期分片查找
+     * @param curPage
+     * @return
+     */
+    @RequestMapping("/listp/{curPage}")
+    public List<Map<String,Object>> getOrderAndDetailListPage(@PathVariable("curPage") Integer curPage){
+        DtoPage dto = new DtoPage();
+        if(curPage==null){
+            curPage=1;
+        }
+        dto.setPageNow(curPage);
+
+        Date startDate = ShardingDateUtil.stringToDate("2021-07-01 00:00:00");
+        Date endDate = ShardingDateUtil.stringToDate("2021-09-01 00:00:00");
+
+        dto.setStartDate(startDate);
+        dto.setEndDate(endDate);
+
+        return orderService.getOrders(dto);
+    }
+
     private AtomicLong atomicLong = new AtomicLong(0);
     private static final String shortDateFormat = "yyyy-MM-dd";
 
@@ -95,6 +181,17 @@ public class OrderController {
             o.setSaleDate(stringToDate(dates[i]));
             o.setUserId(String.valueOf(id));
             orderMapper.addOrder(o);
+
+            OrderDetail od = new OrderDetail();
+            od.setId(o.getId()+"detail");
+            od.setOrderId(o.getId());
+            od.setInventoryId(String.valueOf(i));
+            od.setCreateTime(o.getCreateTime());
+            od.setNum(i+1);
+            od.setSaleDate(o.getSaleDate());
+
+            orderDetailMapper.addOrderDetail(od);
+
         }
 
 

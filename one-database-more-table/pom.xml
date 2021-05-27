@@ -11,5 +11,12 @@
 
     <artifactId>one-database-more-table</artifactId>
 
+    <dependencies>
+        <dependency>
+            <groupId>com.github.pagehelper</groupId>
+            <artifactId>pagehelper-spring-boot-starter</artifactId>
+        </dependency>
+    </dependencies>
+
 
 </project>

@@ -27,6 +27,10 @@ spring:
         password: 123456
 #  config:
     sharding:
+      binding-tables:
+        - t_order,t_order_detail
+        - t_order_a,t_order_detail_a
+      #        - t_order, t_order_detail
       tables:
         t_order:
 #          actual-data-nodes: ds->{1}.t_order  找不到规则的时候 ，会使用这个条件
@@ -37,10 +41,24 @@ spring:
               precise-algorithm-class-name: com.kq.sharding.algorithm.OrderTimePreciseShardingAlgorithm
               range-algorithm-class-name: com.kq.sharding.algorithm.OrderTimeRangeShardingAlgorithm
         t_order_a:
-          actual-data-nodes: ds1.t_order
+#          actual-data-nodes: ds1.t_order
+          actual-data-nodes: ds1.t_order_20210$->{5..9},ds1.t_order_20211$->{0}
           table-strategy:
             standard:
               sharding-column: id
+              precise-algorithm-class-name: com.kq.sharding.algorithm.OrderIdPreciseShardingAlgorithm
+        t_order_detail:
+          actual-data-nodes: ds1.t_order_detail_20210$->{5..9},ds1.t_order_detail_20211$->{0}
+          table-strategy:
+            standard:
+              sharding-column: sale_date
+              precise-algorithm-class-name: com.kq.sharding.algorithm.OrderTimePreciseShardingAlgorithm
+              range-algorithm-class-name: com.kq.sharding.algorithm.OrderTimeRangeShardingAlgorithm
+        t_order_detail_a:
+          actual-data-nodes: ds1.t_order_detail_20210$->{5..9},ds1.t_order_detail_20211$->{0}
+          table-strategy:
+            standard:
+              sharding-column: order_id
               precise-algorithm-class-name: com.kq.sharding.algorithm.OrderIdPreciseShardingAlgorithm
 
       default-data-source-name: ds1

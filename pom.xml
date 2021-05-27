@@ -43,6 +43,7 @@
         <lombok.version>1.18.8</lombok.version>
         <fastjson.version>1.2.29</fastjson.version>
         <shardingsphere.version>4.1.1</shardingsphere.version>
+        <pagehelper.boot.version>1.2.13</pagehelper.boot.version>
         <!--<shardingsphere.version>4.0.1</shardingsphere.version>-->
         <!-- <mysql.version>6.0.6</mysql.version>
          <mysql8.version>8.0.15</mysql8.version>-->
@@ -69,6 +70,12 @@
                 <groupId>org.apache.shardingsphere</groupId>
                 <artifactId>sharding-jdbc-spring-namespace</artifactId>
                 <version>${shardingsphere.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.github.pagehelper</groupId>
+                <artifactId>pagehelper-spring-boot-starter</artifactId>
+                <version>${pagehelper.boot.version}</version>
             </dependency>
 
         </dependencies>
