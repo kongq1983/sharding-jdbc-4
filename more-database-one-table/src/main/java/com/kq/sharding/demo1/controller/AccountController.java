@@ -1,8 +1,8 @@
-package com.kq.sharding4.demo1.controller;
+package com.kq.sharding.demo1.controller;
 
 
-import com.kq.sharding4.demo1.entity.Account;
-import com.kq.sharding4.demo1.mapper.AccountMapper;
+import com.kq.sharding.demo1.entity.Account;
+import com.kq.sharding.demo1.mapper.AccountMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;

@@ -1,6 +1,6 @@
-package com.kq.sharding4.demo1.mapper;
+package com.kq.sharding.demo1.mapper;
 
-import com.kq.sharding4.demo1.entity.Account;
+import com.kq.sharding.demo1.entity.Account;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;

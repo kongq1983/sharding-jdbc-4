@@ -11,6 +11,7 @@
         <module>more-database-one-table</module>
         <module>java-api</module>
         <module>one-database-more-table</module>
+        <module>one-database-more-table-1</module>
     </modules>
     <packaging>pom</packaging>
 

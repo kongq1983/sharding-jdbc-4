@@ -1,4 +1,4 @@
-package com.kq.sharding4.demo1.entity;
+package com.kq.sharding.demo1.entity;
 
 import lombok.Data;
 
