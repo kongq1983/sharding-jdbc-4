@@ -62,6 +62,10 @@ public class OrderController {
         return orderMapper.getOrderList();
     }
 
+    /**
+     * 不会分片
+     * @return
+     */
     @RequestMapping("/list1")
     public List<Order> list1(){
         return orderMapper.getOrderListBySaleDate();

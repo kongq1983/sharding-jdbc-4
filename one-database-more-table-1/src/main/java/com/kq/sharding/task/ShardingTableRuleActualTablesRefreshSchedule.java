@@ -1,5 +1,9 @@
 package com.kq.sharding.task;
 
+import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
+import com.kq.sharding.mapper.TableMapper;
+import com.kq.sharding.service.TableService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.core.rule.TableRule;
@@ -11,11 +15,14 @@ import org.springframework.core.annotation.Order;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 /**
  * @author kq
@@ -32,13 +39,57 @@ public class ShardingTableRuleActualTablesRefreshSchedule  implements Initializi
     @Autowired
     ShardingDataSource shardingDataSource;
 
+    @Autowired
+    private TableService tableService;
+
+    @Autowired
+    private TableMapper tableMapper;
+
+    private static Map<String,String> LOGIC_TABLE_MAP = new ConcurrentHashMap<>();
+
+    public static final String VARA = "_a";
+    public static final String ORDER_TABLE = "t_order";
+    public static final String ORDER_TABLE_DETAIL = "t_order_detail";
+
+    static {
+        LOGIC_TABLE_MAP.put(ORDER_TABLE,ORDER_TABLE);
+        LOGIC_TABLE_MAP.put(ORDER_TABLE+VARA,ORDER_TABLE);
+        LOGIC_TABLE_MAP.put(ORDER_TABLE_DETAIL,ORDER_TABLE_DETAIL);
+        LOGIC_TABLE_MAP.put(ORDER_TABLE_DETAIL+VARA,ORDER_TABLE_DETAIL);
+    }
+
 
     @Scheduled(cron = "0 */1 * * * ?")
     public void actualTablesRefresh() throws NoSuchFieldException, IllegalAccessException {
+        actualTablesRefreshCommon(true);
+    }
+
+
+    public void actualTablesRefreshCommon(boolean scheduled) throws NoSuchFieldException, IllegalAccessException {
+
+        int result = tableService.createSaleOrderLogic();
+        log.debug("自动创建订单-订单明细表结构 scheduled={} 返回结果={}",scheduled,result);
+
+        if(scheduled==true && result==0) {
+            return;
+        }
+
+        // 当前库中的所有表
+        List<String> tables = tableMapper.getTables();
+
+        if(CollectionUtils.isEmpty(tables)){
+            log.warn("未成功获取当前库中的所有表，tables为空!");
+            return;
+        }
+
+
         log.info("-----------------start----------------");
         //版本4.0.0-RC1 以上版本支持写法
 //        ShardingDataSource shardingDataSource = (ShardingDataSource)shardingDataSource;
         ShardingRule shardingRule = shardingDataSource.getRuntimeContext().getRule();
+
+
+
 
         //版本4.0.0-RC1,包含本版本，以及以下版本
 //        ShardingRule shardingRule = ApplicationContextHolder.getBean(ShardingDataSource.class).getShardingContext().getShardingRule();
@@ -47,6 +98,7 @@ public class ShardingTableRuleActualTablesRefreshSchedule  implements Initializi
         Collection<TableRule> tableRules = shardingRule.getTableRules();
 
         for (TableRule tableRule :  tableRules) {
+            // private final List<DataNode> actualDataNodes;
             List<DataNode> dataNodes = tableRule.getActualDataNodes();
 
             Field actualDataNodesField = TableRule.class.getDeclaredField("actualDataNodes");
@@ -54,46 +106,47 @@ public class ShardingTableRuleActualTablesRefreshSchedule  implements Initializi
             modifiersField.setAccessible(true);
             modifiersField.setInt(actualDataNodesField, actualDataNodesField.getModifiers() & ~Modifier.FINAL);
 
-            for(DataNode ds : dataNodes) {
-                log.info("=========== logicTable={} tableName={}",tableRule.getLogicTable(),ds.getTableName());
+//            for(DataNode ds : dataNodes) {
+////                logicTable=t_order_detail_a tableName=t_order_detail_202110
+//                log.info("=========== logicTable={} tableName={}",tableRule.getLogicTable(),ds.getTableName());
+//            }
+
+            // logicTable=t_order t_order_a
+            // logicTable=t_order_detail t_order_detail_a
+
+            // 先创建表 修改actualDataNodes
+
+            // 然后动态更新datasourceToTablesMap
+            // Map<String, Collection<String>> datasourceToTablesMap
+
+            String logicTable = tableRule.getLogicTable().toLowerCase();
+
+            String realTablePrefix = LOGIC_TABLE_MAP.get(logicTable);
+            if(realTablePrefix==null){
+                log.warn("未配置逻辑表对应关系! logicTable={}",logicTable);
+                return;
+            }
+
+            List<String> matchTables = tables.stream().filter(s-> s.matches(realTablePrefix+"_(\\d){6}")).sorted().collect(Collectors.toList());
+
+            if(CollectionUtils.isEmpty(matchTables)){
+                log.warn("未找到匹配的表！表前缀为realTablePrefix={} 全部表结构={}",realTablePrefix,tables);
+                return;
             }
 
 
-
-            /**
-            //key xxxx.dynamic.table.date  如xxxx202005开始 value = 202005
-            //如下会从202005 计算到当前月
-            CacheDictVo dictVo = DictTools.findByCode(tableRule.getLogicTable() + DYNAMIC_TABLES);
-            String dictValue;
-            if (dictVo != null){
-                dictValue = dictVo.getValue();
-            }else {
-                log.error("init test 202005  is  bug");
-                dictValue = "202005";
-            }
-
-
-            Date parse = DateTimeUtil.parse(dictValue);
-
-            LocalDateTime localDateTime = DateTimeUtil.date2LocalDateTime(parse);
-            LocalDateTime now = LocalDateTime.now();
-
+            // ds1.t_order_202105
             String dataSourceName = dataNodes.get(0).getDataSourceName();
             String logicTableName = tableRule.getLogicTable();
-            StringBuilder stringBuilder = new StringBuilder()
-                    .append(dataSourceName).append(".").append(logicTableName);
-            final int length = stringBuilder.length();
+//            StringBuilder stringBuilder = new StringBuilder()
+//                    .append(dataSourceName).append(".").append(logicTableName);
             List<DataNode> newDataNodes = new ArrayList<>();
-            while (true) {
-                stringBuilder.setLength(length);
-                stringBuilder.append(localDateTime.format(DateTimeFormatter.ofPattern("yyyyMM")));
-                DataNode dataNode = new DataNode(stringBuilder.toString());
+
+            for(String table : matchTables) {
+                DataNode dataNode = new DataNode(dataSourceName+"."+table);
                 newDataNodes.add(dataNode);
-                localDateTime = localDateTime.plusMonths(1L);
-                if (localDateTime.isAfter(now)) {
-                    break;
-                }
             }
+
             actualDataNodesField.setAccessible(true);
             actualDataNodesField.set(tableRule, newDataNodes);
 
@@ -126,7 +179,14 @@ public class ShardingTableRuleActualTablesRefreshSchedule  implements Initializi
             Field datasourceToTablesMapField = TableRule.class.getDeclaredField("datasourceToTablesMap");
             datasourceToTablesMapField.setAccessible(true);
             datasourceToTablesMapField.set(tableRule, datasourceToTablesMap);
-             **/
+
+//            Field datasourceToTablesMapField = TableRule.class.getDeclaredField("datasourceToTablesMap");
+//            datasourceToTablesMapField.setAccessible(true);
+//
+//            Object datasourceToTablesMap = datasourceToTablesMapField.get(tableRule);
+//            log.info("datasourceToTablesMap={}",datasourceToTablesMap);
+
+
             log.info("-----------------end----------------");
         }
 
@@ -134,7 +194,7 @@ public class ShardingTableRuleActualTablesRefreshSchedule  implements Initializi
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        actualTablesRefresh();
+        actualTablesRefreshCommon(false);
     }
 
 }

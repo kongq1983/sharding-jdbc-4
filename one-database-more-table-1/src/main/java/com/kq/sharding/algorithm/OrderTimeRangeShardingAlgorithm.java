@@ -47,7 +47,7 @@ public class OrderTimeRangeShardingAlgorithm implements RangeShardingAlgorithm<D
     }
 
     private String getTableName(String logicTableName,Date date) {
-        return logicTableName+"_"+ShardingDateUtil.getOrderTableName(date);
+        return logicTableName+"_"+ShardingDateUtil.getShardingTableName(date);
     }
 
 }

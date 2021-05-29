@@ -15,7 +15,14 @@ import java.util.List;
  */
 public class ShardingDateUtil {
 
-    public static String getOrderTableName(Date date) {
+    public static final String DEFAULT_DATE_FORMAT = "yyyy-MM-dd";
+
+    /**
+     * 注意: 这个方法不能乱改  否则会影响分库 分表
+     * @param date
+     * @return
+     */
+    public static String getShardingTableName(Date date) {
 
         if(date==null) {
             return null;
@@ -136,9 +143,73 @@ public class ShardingDateUtil {
         return c.getTime();
     }
 
+    /**
+     * 添加几个月
+     * @param date
+     * @param month
+     * @return
+     */
+    public static Date getAddMonth(Date date,int month) {
+         Calendar c = Calendar.getInstance();
+         c.setTime(date);
+         c.add(Calendar.MONTH, month);
+         return c.getTime();
+    }
+
+    public static String dateToString(Date time) {
+        try {
+            SimpleDateFormat sdf = new SimpleDateFormat(DEFAULT_DATE_FORMAT);
+            return sdf.format(time);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+
+    public static List<Date> getBetweenMonths(Date startDate, Date endDate) {
+
+        startDate = dealStartDate(startDate);
+        endDate = dealStartDate(endDate);
+
+        int index = 1;
+
+        List<Date> newList = Lists.newArrayList();
+        newList.add(startDate);
+
+        //同一天
+        if(startDate.getTime()==endDate.getTime()) {
+            return newList;
+        }
+
+        Date newDate = dealStartDate(getAddMonth(startDate,1));
+
+        while (newDate.getTime() < endDate.getTime()) {
+            if (index > 36)
+                break; // 防止死循环
+            newList.add(newDate);
+            newDate = dealStartDate(getAddMonth(newDate,1));
+            index++;
+        }
+
+//        newList.add(endDate);
+
+        return newList;
+
+    }
+
 
     public static void main(String[] args) {
-        System.out.println(getOrderTableName(new Date()));
+        System.out.println(getShardingTableName(new Date()));
+        System.out.println(getAddMonth(new Date(),8));
+
+        Date endDate = ShardingDateUtil.getAddMonth(new Date(),12);
+        List<Date> dates = getBetweenMonths(new Date(),endDate);
+
+        for(Date date : dates) {
+            System.out.println("date="+dateToString(date));
+        }
+
+
     }
 
 

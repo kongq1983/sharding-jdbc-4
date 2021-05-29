@@ -29,7 +29,7 @@ public class OrderTimePreciseShardingAlgorithm implements PreciseShardingAlgorit
 
         StringBuffer tableName = new StringBuffer();
         tableName.append(preciseShardingValue.getLogicTableName())
-                .append("_").append(ShardingDateUtil.getOrderTableName(preciseShardingValue.getValue()));
+                .append("_").append(ShardingDateUtil.getShardingTableName(preciseShardingValue.getValue()));
 
         return tableName.toString();
 
