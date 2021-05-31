@@ -1,0 +1,123 @@
+
+server:
+  port: 10000
+  servlet:
+    context-path: /
+#  address: localhost
+
+#spring:
+#  profiles:
+#    active: company_rw
+
+
+mybatis:
+  configuration:
+    map-underscore-to-camel-case: true
+
+
+#driverClassName: oracle.jdbc.OracleDriver
+#  jdbcUrl: jdbc:oracle:thin:@172.16.5.11:1521:orcl
+#  username: shr2
+#  password: shr2
+#  connectionTimeout: 30000
+#  idleTimeout: 60000
+#  maxLifetime: 600000
+#  minimumIdle: 10
+#  maximumPoolSize: 100
+#  leakDetectionThreshold: 5000
+#  poolName: ShrDatabasePoolWL
+#  encrypted: false
+
+# ds2 1个空的da
+spring:
+  shardingsphere:
+    datasource:
+      names: ds0,ds1,ds2
+      ds0:
+        type: com.zaxxer.hikari.HikariDataSource
+        # driver-class-name: com.mysql.jdbc.Driver
+        driver-class-name: com.mysql.cj.jdbc.Driver
+#        jdbcUrl: jdbc:mysql://172.16.5.1:3306/test?useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC
+#        jdbcUrl: jdbc:mysql://172.16.5.1:3306/test?useUnicode=true&characterEncoding=UTF-8
+        jdbcUrl: jdbc:mysql://localhost:3306/test0?useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC
+        username: root
+        password: 123456
+
+      ds1:
+        type: com.zaxxer.hikari.HikariDataSource
+        # driver-class-name: com.mysql.jdbc.Driver
+        driver-class-name: com.mysql.cj.jdbc.Driver
+        jdbcUrl: jdbc:mysql://172.16.5.1:3306/test?useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC
+        username: root
+        password: 123456
+        # 下面是自己的
+        connectionTimeout: 30000
+        idleTimeout: 60000
+        maxLifetime: 600000
+        minimumIdle: 10
+        maximumPoolSize: 100
+        leakDetectionThreshold: 5000
+        poolName: ShrDatabasePoolWL
+        encrypted: false
+      ds2:
+        type: com.zaxxer.hikari.HikariDataSource
+        # driver-class-name: com.mysql.jdbc.Driver
+        driver-class-name: com.mysql.cj.jdbc.Driver
+        #        jdbcUrl: jdbc:mysql://172.16.5.1:3306/test?useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC
+        #        jdbcUrl: jdbc:mysql://172.16.5.1:3306/test?useUnicode=true&characterEncoding=UTF-8
+        jdbcUrl: jdbc:mysql://172.16.5.1:3306/king?useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC
+        username: root
+        password: 123456
+
+#  config:
+    sharding:
+      binding-tables:
+        - t_order,t_order_detail
+        - t_order_a,t_order_detail_a
+      #        - t_order, t_order_detail
+      tables:
+        t_order:
+#          actual-data-nodes: ds->{1}.t_order  找不到规则的时候 ，会使用这个条件
+          actual-data-nodes: ds1.t_order_20210$->{5..9},ds1.t_order_20211$->{0}
+          #actual-data-nodes: ds1.t_order_202105
+          table-strategy:
+            standard:
+              sharding-column: sale_date
+              precise-algorithm-class-name: com.kq.sharding.algorithm.OrderTimePreciseShardingAlgorithm
+              range-algorithm-class-name: com.kq.sharding.algorithm.OrderTimeRangeShardingAlgorithm
+        t_order_a:
+#          actual-data-nodes: ds1.t_order
+          actual-data-nodes: ds1.t_order_202105
+          table-strategy:
+            standard:
+              sharding-column: id
+              precise-algorithm-class-name: com.kq.sharding.algorithm.OrderIdPreciseShardingAlgorithm
+        t_order_detail:
+          actual-data-nodes: ds1.t_order_detail_20210$->{5..9},ds1.t_order_detail_20211$->{0}
+#          actual-data-nodes: ds1.t_order_detail_202105
+          table-strategy:
+            standard:
+              sharding-column: sale_date
+              precise-algorithm-class-name: com.kq.sharding.algorithm.OrderTimePreciseShardingAlgorithm
+              range-algorithm-class-name: com.kq.sharding.algorithm.OrderTimeRangeShardingAlgorithm
+        t_order_detail_a:
+          actual-data-nodes: ds1.t_order_detail_202105
+          table-strategy:
+            standard:
+              sharding-column: order_id
+              precise-algorithm-class-name: com.kq.sharding.algorithm.OrderIdPreciseShardingAlgorithm
+      # 默认数据库
+      default-data-source-name: ds0
+      # 默认没有分片
+      default-table-strategy:
+        none: none
+
+    props:
+      sql:
+        show: true
+
+
+
+
+
+
