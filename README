@@ -11,10 +11,22 @@ http://localhost:10001/sharding-jdbc-4/dict/add?id=3&code=status&name=open
 
 
 http://localhost:10000/order/add
+
 http://localhost:10000/order/5
 http://localhost:10000/order/delete
 http://localhost:10000/order/listp/2
 
+
+http://localhost:10000/order/delete
+http://localhost:10000/transaction/add
+
 https://blog.csdn.net/u013738122/article/details/105427429
 
 动态创建表在one-database-more-table-1
+
+动态刷新
+https://blog.csdn.net/helenyqa/article/details/107315135
+
+自己配置数据源
+https://blog.csdn.net/weixin_33785972/article/details/90225136
+

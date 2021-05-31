@@ -30,8 +30,8 @@ import java.util.stream.Collectors;
  * @since 2020-0630
  */
 
-@Component
-@EnableScheduling
+//@Component
+//@EnableScheduling
 @Slf4j
 @Order(9999)  //需要依赖字典配置，必须在字典启动后启动
 public class ShardingTableRuleActualTablesRefreshSchedule  implements InitializingBean {
