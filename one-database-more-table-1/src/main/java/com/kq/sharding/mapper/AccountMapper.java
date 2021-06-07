@@ -20,6 +20,10 @@ public interface AccountMapper {
     public List<Account> getAccountList();
 
 
+    @Select("select a.id,a.username,a.phone,a.province,a.createTime from t_account a limit 100")
+    public List<Account> getAccountList1();
+
+
     @Insert("insert into t_account(id,username,phone,createTime) values(#{id},#{username},#{phone},#{createTime})")
     void addAccount(Account o);
 

@@ -9,4 +9,6 @@ public interface AccoutJdbcService {
 
     public void add();
 
+    public void add1();
+
 }

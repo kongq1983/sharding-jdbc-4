@@ -72,5 +72,13 @@ public class AccountController {
         return "ok";
     }
 
+    @RequestMapping("/jdbc1")
+    public String jdbcTransaction1(){
+
+        accoutJdbcService.add1();
+
+        return "ok";
+    }
+
 
 }
