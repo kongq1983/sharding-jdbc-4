@@ -84,6 +84,22 @@ public class TableMapper {
 
     }
 
+    public DataSource getOriginalDataSource() {
+        return ShardingDataSourceUtil.getDataSource(shardingDataSource);
+    }
+
+    public JdbcTemplate getNonShardingJdbcTemplate() {
+        DataSource ds = this.getOriginalDataSource();
+        JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
+        return jdbcTemplate;
+    }
+
+    public JdbcTemplate getShardingJdbcTemplate() {
+        JdbcTemplate jdbcTemplate = new JdbcTemplate(shardingDataSource);
+        return jdbcTemplate;
+    }
+
+
 //    public static void main(String[] args) {
 //        String sql = "CREATE TABLE t_order_%s LIKE t_order_temp";
 //

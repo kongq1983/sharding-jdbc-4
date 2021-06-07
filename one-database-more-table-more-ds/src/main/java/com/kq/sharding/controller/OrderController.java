@@ -8,7 +8,9 @@ import com.kq.sharding.mapper.OrderMapper;
 import com.kq.sharding.service.OrderService;
 import com.kq.sharding.util.ShardingDateUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingDataSource;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -218,5 +220,25 @@ public class OrderController {
         return this.atomicLong;
     }
 
+
+    @RequestMapping("/listaa")
+    public List<Map<String,Object>> orderListA() {
+
+
+        String sql = "select * from t_order_a o where o.id = ?"; //
+
+        Object[] os = {"20210806102030111111111111111111111111"};
+        List<Map<String, Object>> list = getShardingJdbcTemplate().queryForList(sql,os);
+
+        return list;
+    }
+
+    @Autowired
+    ShardingDataSource shardingDataSource;
+
+    public JdbcTemplate getShardingJdbcTemplate() {
+        JdbcTemplate jdbcTemplate = new JdbcTemplate(shardingDataSource);
+        return jdbcTemplate;
+    }
 
 }
