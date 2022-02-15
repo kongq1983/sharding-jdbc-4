@@ -13,6 +13,7 @@
         <module>one-database-more-table</module>
         <module>one-database-more-table-1</module>
         <module>one-database-more-table-more-ds</module>
+        <module>mybatis-more-ds</module>
     </modules>
     <packaging>pom</packaging>
 
