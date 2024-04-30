@@ -1,0 +1,64 @@
+
+server:
+  port: 10000
+  servlet:
+    context-path: /
+#  address: localhost
+
+#spring:
+#  profiles:
+#    active: company_rw
+
+
+mybatis:
+  configuration:
+    map-underscore-to-camel-case: true
+
+
+
+spring:
+  shardingsphere:
+    datasource:
+      names: ds1
+      ds0:
+        type: com.zaxxer.hikari.HikariDataSource
+        # driver-class-name: com.mysql.jdbc.Driver
+        driver-class-name: com.mysql.cj.jdbc.Driver
+        jdbcUrl: jdbc:mysql://myserver.com:23306/test0?useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC
+        username: admin
+        password: admin123456
+
+
+#  config:
+    sharding:
+      binding-tables:
+        - t_order,t_order_detail
+        - t_order_a,t_order_detail_a
+      #        - t_order, t_order_detail
+      tables:
+        t_order:
+# actual-data-nodes: ds.table_name_$->{com.demo.util.LocalShardingDatabasesAndTablesUtils.getActualDataNodes()}
+#          actual-data-nodes: ds->{1}.t_order  找不到规则的时候 ，会使用这个条件
+          actual-data-nodes: ds1.t_order_20210$->{com.kq.sharding.util.ActualDataNodeUtil.getActualDataNodes()}
+          #actual-data-nodes: ds1.t_order_202105
+          table-strategy:
+            standard:
+              sharding-column: sale_date
+              precise-algorithm-class-name: com.kq.sharding.algorithm.OrderTimePreciseShardingAlgorithm
+              range-algorithm-class-name: com.kq.sharding.algorithm.OrderTimeRangeShardingAlgorithm
+
+      # 默认数据库
+      default-data-source-name: ds1
+      # 默认没有分片
+      default-table-strategy:
+        none: none
+
+    props:
+      sql:
+        show: true
+
+
+
+
+
+

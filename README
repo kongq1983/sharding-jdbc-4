@@ -33,3 +33,30 @@ https://blog.csdn.net/weixin_33785972/article/details/90225136
 测试jdbc事务
 http://localhost:10000/account/jdbc
 
+# 配置actual-data-nodes
+
+## 配置文件配置
+```
+actual-data-nodes: ds.table_name_$->{com.demo.util.LocalShardingDatabasesAndTablesUtils.getActualDataNodes()}
+
+```
+
+···
+public class LocalShardingDatabasesAndTablesUtils {
+
+    public static int offset = 1;
+
+    public static List<String> getActualDataNodes() {
+        int startYear = 2023;
+        int endYear = LocalDate.now().getYear() + offset;
+        return LongStream.range(startYear, endYear)
+                .mapToObj(Long::toString)
+                .collect(Collectors.toList());
+    }
+}
+
+···
+
+
+# 官方文档
+https://shardingsphere.apache.org/document/4.1.1/en/overview/
