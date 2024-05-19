@@ -15,6 +15,7 @@
         <module>one-database-more-table-more-ds</module>
         <module>mybatis-more-ds</module>
         <module>one-database-quickstart</module>
+        <module>one-database-java-config</module>
     </modules>
     <packaging>pom</packaging>
 
@@ -48,6 +49,7 @@
         <fastjson.version>1.2.29</fastjson.version>
         <shardingsphere.version>4.1.1</shardingsphere.version>
         <pagehelper.boot.version>1.2.13</pagehelper.boot.version>
+        <druid-starter.version>1.1.22</druid-starter.version>
         <!--<shardingsphere.version>4.0.1</shardingsphere.version>-->
         <!-- <mysql.version>6.0.6</mysql.version>
          <mysql8.version>8.0.15</mysql8.version>-->
@@ -124,16 +126,22 @@
         </dependency>
 
 
-        <dependency>
+        <!--<dependency>
             <groupId>org.apache.shardingsphere</groupId>
             <artifactId>sharding-jdbc-spring-boot-starter</artifactId>
             <version>${shardingsphere.version}</version>
-        </dependency>
+        </dependency>-->
 
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
             <artifactId>sharding-jdbc-spring-namespace</artifactId>
             <version>${shardingsphere.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>cn.hutool</groupId>
+            <artifactId>hutool-all</artifactId>
+            <version>5.8.12</version> <!-- 请检查并使用最新版本 -->
         </dependency>
 
     </dependencies>

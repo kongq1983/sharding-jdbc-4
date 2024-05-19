@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration scan="true" scanPeriod="60 seconds" debug="false">
+
+    <property name="processName" value="report-center-service"/>
+    <!-- 日志最大的历史 365天 -->
+    <property name="maxHistory" value="30"/>
+    <springProperty scope="context" name="logging.path" source="logging.file.path"/>
+    <springProperty scope="context" name="levelRoot" source="logging.level.root" defaultValue="info"/>
+    <!--控制台输出-->
+    <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <!--<level>ERROR</level>--><!--输入到控制台的等级限制，如果选为error，只有大于等于error级别才会输出-->
+            <level>DEBUG</level><!-- 设置控制台只显示info 信息-->
+        </filter>
+        <layout class="ch.qos.logback.classic.PatternLayout">
+            <pattern>%date{yyyy-MM-dd HH:mm:ss.SSS} [%X{serviceName:-${processName}}|%thread|%X{traceId:-}|%X{key1:-}|%X{key2:-}] %-5level %logger{50}:%L - %msg%n</pattern>
+        </layout>
+    </appender>
+    <!-- 文件输出-->
+    <appender name="config-log" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <File>${logging.path}/${processName}/config-service.log</File>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <FileNamePattern>${logging.path}/${processName}/history/%d{yyyy-MM-dd}/service.%d{yyyy-MM-dd}.log.gz</FileNamePattern>
+            <maxHistory>15</maxHistory>
+        </rollingPolicy>
+        <layout class="ch.qos.logback.classic.PatternLayout">
+            <pattern>%date{yyyy-MM-dd HH:mm:ss.SSS} [%X{serviceName:-${processName}}|%thread|%X{traceId:-}|%X{key1:-}|%X{key2:-}] %-5level %logger{50}:%L - %msg%n</pattern>
+        </layout>
+    </appender>
+
+    <!-- ERROR级别日志 -->
+    <!-- 滚动记录文件，先将日志记录到指定文件，当符合某个条件时，将日志记录到其他文件 RollingFileAppender-->
+    <appender name="ERROR" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <!-- 过滤器，只记录WARN级别的日志 -->
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>ERROR</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+        <File>${logging.path}/${processName}/error-log.log</File>
+        <!-- 最常用的滚动策略，它根据时间来制定滚动策略.既负责滚动也负责出发滚动 -->
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <!--日志输出位置  可相对、和绝对路径 -->
+            <fileNamePattern>${logging.path}/${processName}/history/%d{yyyy-MM-dd}/error-log-%i.log.gz
+            </fileNamePattern>
+            <!-- 可选节点，控制保留的归档文件的最大数量，超出数量就删除旧文件假设设置每个月滚动，且<maxHistory>是6，
+            则只保存最近6个月的文件，删除之前的旧文件。注意，删除旧文件是，那些为了归档而创建的目录也会被删除-->
+            <maxHistory>${maxHistory}</maxHistory>
+            <maxFileSize>50MB</maxFileSize>
+            <totalSizeCap>10GB</totalSizeCap>
+        </rollingPolicy>
+
+        <encoder>
+            <pattern>
+                %date{[yyyy-MM-dd][HH:mm:ss.SSS]}[%highlight(%-5level)][%boldCyan(%logger.%method:%L)]:[%msg]%n
+            </pattern>
+        </encoder>
+    </appender>
+
+
+    <!-- WARN级别日志 appender -->
+    <appender name="WARN" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <!-- 过滤器，只记录WARN级别的日志 -->
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>WARN</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+        <File>${logging.path}/${processName}/warn-log.log</File>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <!-- 按天回滚 daily -->
+            <fileNamePattern>${logging.path}/${processName}/history/%d{yyyy-MM-dd}/warn-log-%i.log.gz
+            </fileNamePattern>
+            <maxHistory>${maxHistory}</maxHistory>
+            <maxFileSize>50MB</maxFileSize>
+            <totalSizeCap>1GB</totalSizeCap>
+        </rollingPolicy>
+        <encoder>
+            <pattern>
+                %date{[yyyy-MM-dd][HH:mm:ss.SSS]}[%-5level][%thread][%logger.%method:%L]:[%msg]%n
+            </pattern>
+        </encoder>
+    </appender>
+
+    <!-- INFO级别日志 appender -->
+    <appender name="INFO" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <!-- 过滤器，只记录INFO级别的日志 -->
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>INFO</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+        <File>${logging.path}/${processName}/info-log.log</File>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <!-- 按天回滚 daily -->
+            <fileNamePattern>${logging.path}/${processName}/history/%d{yyyy-MM-dd}/info-log-%i.log.gz
+            </fileNamePattern>
+            <maxHistory>${maxHistory}</maxHistory>
+            <maxFileSize>50MB</maxFileSize>
+            <totalSizeCap>2GB</totalSizeCap>
+        </rollingPolicy>
+        <encoder>
+            <pattern>
+                %date{[yyyy-MM-dd][HH:mm:ss.SSS]}[%-5level][%thread][%logger.%method:%L]:[%msg]%n
+            </pattern>
+        </encoder>
+    </appender>
+
+
+    <!-- DEBUG级别日志 appender -->
+    <appender name="DEBUG" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <!-- 过滤器，只记录DEBUG级别的日志 -->
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>DEBUG</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+        <File>${logging.path}/${processName}/debug-log.log</File>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <!-- 按天回滚 daily -->
+            <fileNamePattern>${logging.path}/${processName}/history/%d{yyyy-MM-dd}/debug-log-%i.log.gz
+            </fileNamePattern>
+            <maxHistory>${maxHistory}</maxHistory>
+            <maxFileSize>50MB</maxFileSize>
+            <totalSizeCap>1GB</totalSizeCap>
+        </rollingPolicy>
+        <encoder>
+            <pattern>
+                %date{[yyyy-MM-dd][HH:mm:ss.SSS]}[%-5level][%thread][%logger.%method:%L]:[%msg]%n
+            </pattern>
+        </encoder>
+    </appender>
+
+    <logger name="com.zaxxer.hikari" level="info"/>
+    <logger name="com.alibaba.nacos.client" level="info"/>
+    <logger name="om.mchange.v2.resourcepool" level="info"/>
+    <logger name="org.redisson.connection.DNSMonitor" level="info"/>
+
+    <root level="${levelRoot}">
+        <appender-ref ref="config-log"/>
+        <appender-ref ref="console"/>
+        <!-- 文件输出 -->
+        <appender-ref ref="ERROR"/>
+        <appender-ref ref="INFO"/>
+        <appender-ref ref="WARN"/>
+        <appender-ref ref="DEBUG"/>
+    </root>
+</configuration>

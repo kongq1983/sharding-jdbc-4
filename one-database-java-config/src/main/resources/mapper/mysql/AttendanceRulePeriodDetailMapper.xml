@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kq.sharding.dao.AttendanceRulePeriodDetailMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.kq.sharding.entity.AttendanceRulePeriodDetail">
+        <result column="id" property="id" />
+        <result column="tenant_id" property="tenantId" />
+        <result column="attendance_rule_id" property="attendanceRuleId" />
+        <result column="attendance_rule_period_id" property="attendanceRulePeriodId" />
+        <result column="name" property="name" />
+        <result column="type" property="type" />
+        <result column="start_time" property="startTime" />
+        <result column="end_time" property="endTime" />
+        <result column="early_later_time" property="earlyLaterTime" />
+        <result column="search_start_time" property="searchStartTime" />
+        <result column="search_end_time" property="searchEndTime" />
+        <result column="create_user" property="createUser" />
+        <result column="create_time" property="createTime" />
+        <result column="edit_user" property="editUser" />
+        <result column="edit_time" property="editTime" />
+    </resultMap>
+
+</mapper>

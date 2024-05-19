@@ -60,3 +60,7 @@ public class LocalShardingDatabasesAndTablesUtils {
 
 # 官方文档
 https://shardingsphere.apache.org/document/4.1.1/en/overview/
+
+# DataSource
+DataSourceProperties
+DataSourceConfiguration
