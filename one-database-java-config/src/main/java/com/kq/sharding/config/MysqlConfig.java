@@ -12,7 +12,9 @@ import org.apache.shardingsphere.api.config.sharding.strategy.ComplexShardingStr
 import org.apache.shardingsphere.api.sharding.complex.ComplexKeysShardingAlgorithm;
 import org.apache.shardingsphere.shardingjdbc.api.ShardingDataSourceFactory;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingDataSource;
+import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -29,6 +31,7 @@ import java.util.Properties;
 //@ConditionalOnProperty(name = "db.type", havingValue = "mysql",
 //        matchIfMissing = true)
 @Configuration
+@AutoConfigureAfter({ DataSourceAutoConfiguration.class})
 public class MysqlConfig {
 
 //    @Bean(name = "dataSource")
@@ -51,8 +54,12 @@ public class MysqlConfig {
         return (T) properties.initializeDataSourceBuilder().type(type).build();
     }
 
+    @Resource
+    private DataSource dataSource;
+
     @Bean(name = "shardingDataSource")
     ShardingDataSource shardingDataSource(DataSource dataSource) throws SQLException {
+//    ShardingDataSource shardingDataSource() throws SQLException {
         StaticLog.info("[DataSourceConfig][mysql][dataSource] running... db.type is {}", SpringUtil.getProperty("db.type"));
         Map<String, DataSource> forSharding = Maps.newHashMap();
         forSharding.put("dataSource_for_sharding", dataSource);

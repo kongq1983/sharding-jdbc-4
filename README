@@ -64,3 +64,5 @@ https://shardingsphere.apache.org/document/4.1.1/en/overview/
 # DataSource
 DataSourceProperties
 DataSourceConfiguration
+MybatisAutoConfiguration
+MybatisPlusAutoConfiguration

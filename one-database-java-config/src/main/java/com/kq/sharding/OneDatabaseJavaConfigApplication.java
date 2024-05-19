@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 @EnableTransactionManagement
 @SpringBootApplication(exclude = {DataSourceAutoConfiguration.class})
+//@SpringBootApplication()
 public class OneDatabaseJavaConfigApplication {
 
     public static void main(String[] args) {

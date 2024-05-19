@@ -136,7 +136,7 @@
     <logger name="om.mchange.v2.resourcepool" level="info"/>
     <logger name="org.redisson.connection.DNSMonitor" level="info"/>
 
-    <root level="${levelRoot}">
+    <root level="debug">
         <appender-ref ref="config-log"/>
         <appender-ref ref="console"/>
         <!-- 文件输出 -->

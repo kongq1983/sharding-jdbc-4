@@ -16,7 +16,9 @@ import org.apache.shardingsphere.core.rule.TableRule;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingDataSource;
 import org.apache.shardingsphere.underlying.common.rule.DataNode;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Configuration;
 
@@ -35,13 +37,14 @@ import java.util.concurrent.atomic.AtomicInteger;
 //        matchIfMissing = true)
 @Slf4j
 @Configuration
+@AutoConfigureAfter({ MysqlConfig.class})
 public class ShardingConfig implements InitializingBean {
 
     @Resource
     DataSource dataSource;
 
-    @Resource
-    ShardingDataSource shardingDataSource;
+//    @Resource
+//    ShardingDataSource shardingDataSource;
 
     @Override
     public void afterPropertiesSet() throws Exception {
@@ -60,7 +63,7 @@ public class ShardingConfig implements InitializingBean {
         ShardingRule shardingRule = shardingDataSource.getRuntimeContext().getRule();
         String dbUrl = SpringUtil.getApplicationContext().getEnvironment().getProperty("spring.datasource.url");
         String dbName = dbUrl.substring(dbUrl.lastIndexOf("/") + 1, dbUrl.indexOf("?"));
-        String sqlStr = "select table_name from information_schema.tables where table_schema = '" + dbName + "' and table_name REGEXP '#{tableName}[0-9]{6}' order by table_name";
+        String sqlStr = "select table_name from information_schema.tables where table_schema = '" + dbName + "' and table_name REGEXP '#{tableName}_[0-9]{6}' order by table_name";
         TableRule tr;
         ResultSet res;
         String dataSourceName = "dataSource_for_sharding";
@@ -73,7 +76,8 @@ public class ShardingConfig implements InitializingBean {
         // 按月分表的表规则放入
         for (String subTableName : shardingTables) {
             tr = shardingRule.getTableRule(subTableName);
-            res = se.executeQuery(sqlStr.replace("#{tableName}", subTableName));
+            String sql = sqlStr.replace("#{tableName}", subTableName);
+            res = se.executeQuery(sql);
             nodes = new ArrayList<>();
             while (res.next()) {
                 tableNode = new StringBuilder();
