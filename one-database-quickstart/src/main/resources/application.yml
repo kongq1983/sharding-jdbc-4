@@ -15,40 +15,71 @@ mybatis:
     map-underscore-to-camel-case: true
 
 
-
 spring:
+
+  # start--------------------------------------------------------------------
+  datasource:
+    #    url: jdbc:mysql://mysql.kq.com:23306/attendancedb?autoReconnect=true&useUnicode=true&allowMultiQueries=true&characterEncoding=utf-8&serverTimezone=GMT%2B8
+    url: jdbc:mysql://172.16.5.149:6006/attendancedb?autoReconnect=true&useUnicode=true&allowMultiQueries=true&characterEncoding=utf-8&serverTimezone=GMT%2B8
+    username: ${DATABASE_USERNAME}
+    password: ${DATABASE_PASSWORD}
+    initialization-mode: always
+    tomcat:
+      driver-class-name: com.mysql.cj.jdbc.Driver
+      max-idle: 10
+      max-wait: 10000
+      min-idle: 5
+      initial-size: 5
+      validation-query: SELECT 1
+      test-on-borrow: true
+      test-while-idle: true
+      time-between-eviction-runs-millis: 18800
+      jdbc-interceptors: ConnectionState;SlowQueryReport(threshold=0)
+
+  # e-n-d--------------------------------------------------------------------
+
   shardingsphere:
     datasource:
-      names: ds1
+      names: ds0
       ds0:
         type: com.zaxxer.hikari.HikariDataSource
         # driver-class-name: com.mysql.jdbc.Driver
         driver-class-name: com.mysql.cj.jdbc.Driver
-        jdbcUrl: jdbc:mysql://myserver.com:23306/test0?useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC
-        username: admin
-        password: admin123456
+#        jdbcUrl: jdbc:mysql://myserver.com:23306/test0?useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC
+#        username: admin
+#        password: admin123456
+#        url: jdbc:mysql://172.16.5.149:6006/attendancedb?autoReconnect=true&useUnicode=true&allowMultiQueries=true&characterEncoding=utf-8&serverTimezone=GMT%2B8
+        jdbcUrl: jdbc:mysql://172.16.5.149:6006/attendancedb?autoReconnect=true&useUnicode=true&allowMultiQueries=true&characterEncoding=utf-8&serverTimezone=GMT%2B8
+        username: ${DATABASE_USERNAME}
+        password: ${DATABASE_PASSWORD}
 
 
 #  config:
     sharding:
-      binding-tables:
-        - t_order,t_order_detail
-        - t_order_a,t_order_detail_a
+#      binding-tables:
+#        - t_order,t_order_detail
+#        - t_order_a,t_order_detail_a
       #        - t_order, t_order_detail
       tables:
-        t_order:
+        ad_attendance_result:
 # actual-data-nodes: ds.table_name_$->{com.demo.util.LocalShardingDatabasesAndTablesUtils.getActualDataNodes()}
 #          actual-data-nodes: ds->{1}.t_order  找不到规则的时候 ，会使用这个条件
-          actual-data-nodes: ds1.t_order_20210$->{com.kq.sharding.util.ActualDataNodeUtil.getActualDataNodes()}
-          #actual-data-nodes: ds1.t_order_202105
+          actual-data-nodes: ds0.ad_attendance_result
           table-strategy:
             standard:
-              sharding-column: sale_date
+              sharding-column: in_out_time
+              precise-algorithm-class-name: com.kq.sharding.algorithm.OrderTimePreciseShardingAlgorithm
+              range-algorithm-class-name: com.kq.sharding.algorithm.OrderTimeRangeShardingAlgorithm
+        ad_in_out_record:
+          actual-data-nodes: ds0.ad_in_out_record
+          table-strategy:
+            standard:
+              sharding-column: in_out_time
               precise-algorithm-class-name: com.kq.sharding.algorithm.OrderTimePreciseShardingAlgorithm
               range-algorithm-class-name: com.kq.sharding.algorithm.OrderTimeRangeShardingAlgorithm
 
       # 默认数据库
-      default-data-source-name: ds1
+      default-data-source-name: ds0
       # 默认没有分片
       default-table-strategy:
         none: none

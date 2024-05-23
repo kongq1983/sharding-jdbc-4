@@ -66,3 +66,18 @@ DataSourceProperties
 DataSourceConfiguration
 MybatisAutoConfiguration
 MybatisPlusAutoConfiguration
+ShardingDataSourceFactory.createDataSource
+
+
+@AutoConfigureBefore(DataSourceAutoConfiguration.class)
+@RequiredArgsConstructor
+public class SpringBootConfiguration implements EnvironmentAware {}
+
+
+# sharding配置
+SpringBootShardingRuleConfigurationProperties
+
+
+# DataSourceProperties
+
+# Configuration mybatis
