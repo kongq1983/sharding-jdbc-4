@@ -63,6 +63,10 @@ https://shardingsphere.apache.org/document/4.1.1/en/overview/
 
 # DataSource
 DataSourceProperties
+DataSourceAutoConfiguration
+
+DataSourceConfiguration
+
 DataSourceConfiguration
 MybatisAutoConfiguration
 MybatisPlusAutoConfiguration
@@ -81,3 +85,5 @@ SpringBootShardingRuleConfigurationProperties
 # DataSourceProperties
 
 # Configuration mybatis
+
+LocalTimeTypeHandler

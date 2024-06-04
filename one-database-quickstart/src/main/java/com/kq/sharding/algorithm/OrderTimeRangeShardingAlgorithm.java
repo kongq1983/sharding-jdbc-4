@@ -19,8 +19,21 @@ public class OrderTimeRangeShardingAlgorithm implements RangeShardingAlgorithm<D
     public Collection<String> doSharding(Collection<String> availableTargetNames, RangeShardingValue<Date> shardingValue) {
 
         String logicTableName = shardingValue.getLogicTableName();
-        Date lower = shardingValue.getValueRange().lowerEndpoint();
-        Date upper = shardingValue.getValueRange().upperEndpoint();
+
+        // 只有开始日期或结束日期，默认是该月
+        Date lower = null;
+        try {
+            lower = shardingValue.getValueRange().lowerEndpoint();
+        }catch (Exception e){
+            // ingore
+        }
+
+        Date upper = null;
+        try {
+            upper = shardingValue.getValueRange().upperEndpoint();
+        }catch (Exception e){
+            // ignore
+        }
 
         Set<String> tablenames = new TreeSet();
 

@@ -12,4 +12,14 @@
     <artifactId>mybatis-more-ds</artifactId>
 
 
+    <dependencies>
+
+        <dependency>
+            <groupId>org.mybatis</groupId>
+            <artifactId>mybatis-typehandlers-jsr310</artifactId>
+            <version>1.0.1</version>
+        </dependency>
+
+    </dependencies>
+
 </project>

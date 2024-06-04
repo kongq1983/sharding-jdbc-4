@@ -30,11 +30,43 @@ public class InOutRecordController {
      * @return
      */
     @GetMapping("/in/out/list")
-    public List<InOutRecord> list(@RequestParam("startDate") Date startDate, @RequestParam("endDate") Date endDate) {
+    public List<InOutRecord> list(@RequestParam(value = "startDate", required = false) Date startDate
+                    , @RequestParam(value = "endDate", required = false) Date endDate) {
 
         LambdaQueryWrapper<InOutRecord> lambdaQueryWrapper = new LambdaQueryWrapper<>();
-        lambdaQueryWrapper.ge(InOutRecord::getInOutTime, startDate);
-        lambdaQueryWrapper.le(InOutRecord::getInOutTime,endDate);
+        if(startDate!=null) {
+            lambdaQueryWrapper.ge(InOutRecord::getInOutTime, startDate);
+        }
+
+        if(endDate!=null) {
+            lambdaQueryWrapper.le(InOutRecord::getInOutTime, endDate);
+        }
+
+        return inOutRecordService.list(lambdaQueryWrapper);
+
+    }
+
+
+    /**
+     * http://localhost:10000/in/out/group?startDate=2024-03-01&endDate=2024-05-31
+     * @param startDate
+     * @param endDate
+     * @return
+     */
+    @GetMapping("/in/out/group")
+    public List<InOutRecord> listGroup(@RequestParam(value = "startDate", required = false) Date startDate
+            , @RequestParam(value = "endDate", required = false) Date endDate) {
+
+        LambdaQueryWrapper<InOutRecord> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+        if(startDate!=null) {
+            lambdaQueryWrapper.ge(InOutRecord::getInOutTime, startDate);
+        }
+
+        if(endDate!=null) {
+            lambdaQueryWrapper.le(InOutRecord::getInOutTime, endDate);
+        }
+
+        lambdaQueryWrapper.groupBy(InOutRecord::getInOutTime).groupBy(InOutRecord::getUserId);
 
         return inOutRecordService.list(lambdaQueryWrapper);
 
